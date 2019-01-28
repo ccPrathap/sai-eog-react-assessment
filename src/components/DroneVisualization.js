@@ -1,46 +1,84 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import Plot from 'react-plotly.js';
+import { withStyles } from "@material-ui/core/styles";
+import LinearProgress from "@material-ui/core/LinearProgress";
 import * as actions from "../store/actions";
 
+const styles = theme => ({
+  wrapper: {
+    height: "100%",
+    width: "100%"
+  }
+});
+
 class DroneVisualization extends Component {
+  componentDidMount() {
+    const { onLoad } = this.props;
+    onLoad();
+    this.timer = setInterval(() => onLoad(), 4000);
+  }
+  componentDidUpdate(prevProps) {
+    const {
+      longitude,
+      latitude,
+      updateTemperature
+    } = this.props;
+    if (prevProps.longitude !== longitude ||
+      prevProps.latitude !== latitude) {
+      updateTemperature(longitude, latitude);
+    }
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
   render() {
+    const { classes, loading, data } = this.props;
+    if (loading) return <LinearProgress />;
     return (
       <Plot
-        data={[
-          {type: 'lines', x: [1, 2, 3], y: [2, 5, 3]},
-        ]}
-        layout={ {width: 700, height: 300, title: 'Drone temperature Plot'} }
+        className={classes.wrapper}
+        data={[{
+          type: 'lines',
+          x: data.x,
+          y: data.y
+        }]}
+        layout={ {height: 320, title: 'Drone Data Plot'} }
+        useResizeHandler
       />
     );
   }
 }
 
-const mapState = (state, ownProps) => {
+const mapState = state => {
   const {
     loading,
-    name,
-    weather_state_name,
-    temperatureinFahrenheit
-  } = state.weather;
+    longitude,
+    latitude,
+    data
+  } = state.drone;
   return {
     loading,
-    name,
-    weather_state_name,
-    temperatureinFahrenheit
+    longitude,
+    latitude,
+    data
   };
 };
 
 const mapDispatch = dispatch => ({
   onLoad: () =>
     dispatch({
+      type: actions.FETCH_DRONE_DATA
+    }),
+  updateTemperature: (longitude, latitude) =>
+    dispatch({
       type: actions.FETCH_WEATHER,
-      longitude: -95.3698,
-      latitude: 29.7604
+      longitude,
+      latitude
     })
 });
 
 export default connect(
   mapState,
   mapDispatch
-)(DroneVisualization);
+)(withStyles(styles)(DroneVisualization));

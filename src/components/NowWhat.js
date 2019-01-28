@@ -17,7 +17,7 @@ const cardStyles = theme => ({
 const CardHeader = withStyles(cardStyles)(CardHeaderRaw);
 const styles = {
   card: {
-    margin: "5% 20%"
+    margin: "5% 25%"
   }
 };
 
@@ -25,7 +25,7 @@ const NowWhat = props => {
   const { classes } = props;
   return (
     <Card className={classes.card}>
-      <CardHeader title="Drone Temperature Visualization" />
+      <CardHeader title="Drone Data Visualization" />
       <CardContent>
         <DroneVisualization />
       </CardContent>
