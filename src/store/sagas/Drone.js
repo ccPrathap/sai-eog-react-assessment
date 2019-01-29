@@ -8,7 +8,10 @@ function* watchFetchDroneData() {
   );
   if (error) {
     console.log({ error });
-    yield put({ type: actions.API_ERROR, code: error.code });
+    yield put({
+      type: actions.DRONE_API_ERROR,
+      code: error.code ? error.code : "Something went wrong."
+    });
     yield cancel();
     return;
   }

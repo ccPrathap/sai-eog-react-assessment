@@ -33,8 +33,9 @@ class DroneVisualization extends Component {
     clearInterval(this.timer);
   }
   render() {
-    const { classes, loading, data } = this.props;
+    const { classes, data, error, loading } = this.props;
     if (loading) return <LinearProgress />;
+    if (error) return <h3>{`Oops! ${error}`}</h3>;
     return (
       <Plot
         className={classes.wrapper}
@@ -52,12 +53,14 @@ class DroneVisualization extends Component {
 
 const mapState = state => {
   const {
+    error,
     loading,
     longitude,
     latitude,
     data
   } = state.drone;
   return {
+    error,
     loading,
     longitude,
     latitude,

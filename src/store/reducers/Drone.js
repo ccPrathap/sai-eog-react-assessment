@@ -4,12 +4,14 @@ const initialState = {
   loading: false,
   latitude: null,
   longitude: null,
+  error: null,
   data: {}
 };
 
 const startLoading = state => {
   return {
     ...state,
+    error: null,
     loading: Object.entries(state.data).length === 0
   };
 };
@@ -23,6 +25,7 @@ const droneDataRecevied = (state, action) => {
 
   return {
     ...state,
+    error: null,
     loading: false,
     latitude: data[data.length - 1].latitude,
     longitude: data[data.length - 1].longitude,
@@ -30,9 +33,19 @@ const droneDataRecevied = (state, action) => {
   };
 };
 
+const droneDataError = (state, action) => ({
+  ...state,
+  error: action.code,
+  loading: false,
+  latitude: null,
+  longitude: null,
+  data: {}
+});
+
 const handlers = {
   [actions.FETCH_DRONE_DATA]: startLoading,
-  [actions.DRONE_DATA_RECEIVED]: droneDataRecevied
+  [actions.DRONE_DATA_RECEIVED]: droneDataRecevied,
+  [actions.DRONE_API_ERROR]: droneDataError
 };
 
 export default (state = initialState, action) => {
